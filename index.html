@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="An interactive visual laboratory for learning every core CSS Flexbox property." />
+  <title>FlexLab — Interactive Flexbox Visualizer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-mark" aria-hidden="true">↔</div>
+        <div>
+          <p class="eyebrow">GOJO.DEV LEARNING TOOL</p>
+          <h1>FlexLab</h1>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="button ghost" id="toggleLabelsBtn" type="button" aria-pressed="true">
+          Property labels
+        </button>
+        <button class="button ghost" id="toggleAxesBtn" type="button" aria-pressed="true">
+          Show axes
+        </button>
+        <button class="button primary" id="randomizeBtn" type="button">
+          Randomize chaos
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="controls-panel" aria-label="Flexbox controls">
+        <nav class="tabs" aria-label="Control sections">
+          <button class="tab active" type="button" data-tab="container">Container</button>
+          <button class="tab" type="button" data-tab="item">Selected item</button>
+          <button class="tab" type="button" data-tab="challenges">Challenges</button>
+          <button class="tab" type="button" data-tab="guide">Guide</button>
+        </nav>
+
+        <section class="tab-panel active" data-panel="container">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PARENT RULES</p>
+              <h2>Flex container</h2>
+            </div>
+            <span class="status-dot" title="Changes update live"></span>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="displaySelect">
+              <span>display</span>
+              <code id="displayValue">flex</code>
+            </label>
+            <select id="displaySelect">
+              <option value="flex">flex</option>
+              <option value="inline-flex">inline-flex</option>
+            </select>
+            <p class="control-help">Creates a flex formatting context for the direct children.</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="directionSelect">
+              <span>flex-direction</span>
+              <code id="directionValue">row</code>
+            </label>
+            <select id="directionSelect">
+              <option value="row">row</option>
+              <option value="row-reverse">row-reverse</option>
+              <option value="column">column</option>
+              <option value="column-reverse">column-reverse</option>
+            </select>
+            <p class="control-help">Defines the main axis and its direction.</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="wrapSelect">
+              <span>flex-wrap</span>
+              <code id="wrapValue">wrap</code>
+            </label>
+            <select id="wrapSelect">
+              <option value="nowrap">nowrap</option>
+              <option value="wrap">wrap</option>
+              <option value="wrap-reverse">wrap-reverse</option>
+            </select>
+            <p class="control-help">Controls whether items stay on one line or create new flex lines.</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="justifySelect">
+              <span>justify-content</span>
+              <code id="justifyValue">flex-start</code>
+            </label>
+            <select id="justifySelect">
+              <option value="flex-start">flex-start</option>
+              <option value="center">center</option>
+              <option value="flex-end">flex-end</option>
+              <option value="space-between">space-between</option>
+              <option value="space-around">space-around</option>
+              <option value="space-evenly">space-evenly</option>
+            </select>
+            <p class="control-help">Distributes leftover space along the main axis.</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="alignItemsSelect">
+              <span>align-items</span>
+              <code id="alignItemsValue">stretch</code>
+            </label>
+            <select id="alignItemsSelect">
+              <option value="stretch">stretch</option>
+              <option value="flex-start">flex-start</option>
+              <option value="center">center</option>
+              <option value="flex-end">flex-end</option>
+              <option value="baseline">baseline</option>
+            </select>
+            <p class="control-help">Aligns items within each flex line along the cross axis.</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="alignContentSelect">
+              <span>align-content</span>
+              <code id="alignContentValue">stretch</code>
+            </label>
+            <select id="alignContentSelect">
+              <option value="stretch">stretch</option>
+              <option value="flex-start">flex-start</option>
+              <option value="center">center</option>
+              <option value="flex-end">flex-end</option>
+              <option value="space-between">space-between</option>
+              <option value="space-around">space-around</option>
+              <option value="space-evenly">space-evenly</option>
+            </select>
+            <div class="warning-box" id="alignContentWarning">
+              <strong>Currently inactive.</strong> It needs wrapping and more than one flex line.
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="control-group compact">
+              <label class="control-label" for="rowGapRange">
+                <span>row-gap</span>
+                <code><span id="rowGapValue">12</span>px</code>
+              </label>
+              <input id="rowGapRange" type="range" min="0" max="60" value="12" />
+            </div>
+            <div class="control-group compact">
+              <label class="control-label" for="columnGapRange">
+                <span>column-gap</span>
+                <code><span id="columnGapValue">12</span>px</code>
+              </label>
+              <input id="columnGapRange" type="range" min="0" max="60" value="12" />
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="control-group compact">
+              <label class="control-label" for="stageWidthRange">
+                <span>lab width</span>
+                <code><span id="stageWidthValue">760</span>px</code>
+              </label>
+              <input id="stageWidthRange" type="range" min="320" max="1000" value="760" />
+            </div>
+            <div class="control-group compact">
+              <label class="control-label" for="stageHeightRange">
+                <span>lab height</span>
+                <code><span id="stageHeightValue">420</span>px</code>
+              </label>
+              <input id="stageHeightRange" type="range" min="220" max="700" value="420" />
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Visualization lenses</span>
+              <code>live</code>
+            </div>
+            <label class="check-row">
+              <input id="showLinesCheck" type="checkbox" checked />
+              <span>Outline each flex line</span>
+            </label>
+            <label class="check-row">
+              <input id="animateCheck" type="checkbox" checked />
+              <span>Animate layout changes</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="item">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">CHILD RULES</p>
+              <h2 id="selectedItemHeading">Item 1</h2>
+            </div>
+            <span class="item-chip" id="selectedItemChip">#1</span>
+          </div>
+
+          <div class="item-picker" id="itemPicker" aria-label="Choose a flex item"></div>
+
+          <div class="control-group">
+            <label class="control-label" for="orderRange">
+              <span>order</span>
+              <code id="orderValue">0</code>
+            </label>
+            <input id="orderRange" type="range" min="-5" max="10" value="0" />
+            <p class="control-help">Lower values display first. The DOM reading order does not change.</p>
+          </div>
+
+          <div class="three-col">
+            <div class="control-group compact">
+              <label class="control-label" for="growRange">
+                <span>grow</span>
+                <code id="growValue">0</code>
+              </label>
+              <input id="growRange" type="range" min="0" max="6" step="1" value="0" />
+            </div>
+            <div class="control-group compact">
+              <label class="control-label" for="shrinkRange">
+                <span>shrink</span>
+                <code id="shrinkValue">1</code>
+              </label>
+              <input id="shrinkRange" type="range" min="0" max="6" step="1" value="1" />
+            </div>
+            <div class="control-group compact">
+              <label class="control-label" for="basisValueInput">
+                <span>basis</span>
+                <code id="basisDisplay">110px</code>
+              </label>
+              <input id="basisValueInput" type="number" min="0" max="900" value="110" />
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="basisTypeSelect">
+              <span>flex-basis unit/value</span>
+              <code id="basisTypeValue">px</code>
+            </label>
+            <select id="basisTypeSelect">
+              <option value="px">pixels (px)</option>
+              <option value="percent">percentage (%)</option>
+              <option value="auto">auto</option>
+              <option value="content">content</option>
+              <option value="zero">zero (0%)</option>
+            </select>
+            <p class="control-help">The starting main size before free space is grown or removed.</p>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="alignSelfSelect">
+              <span>align-self</span>
+              <code id="alignSelfValue">auto</code>
+            </label>
+            <select id="alignSelfSelect">
+              <option value="auto">auto</option>
+              <option value="stretch">stretch</option>
+              <option value="flex-start">flex-start</option>
+              <option value="center">center</option>
+              <option value="flex-end">flex-end</option>
+              <option value="baseline">baseline</option>
+            </select>
+            <p class="control-help">Overrides align-items for only this item.</p>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Auto margins</span>
+              <code>space thief</code>
+            </div>
+            <label class="check-row">
+              <input id="marginStartCheck" type="checkbox" />
+              <span>margin at main-start: auto</span>
+            </label>
+            <label class="check-row">
+              <input id="marginEndCheck" type="checkbox" />
+              <span>margin at main-end: auto</span>
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label class="check-row prominent">
+              <input id="minMainZeroCheck" type="checkbox" />
+              <span>
+                <strong>Allow content to shrink below its automatic minimum</strong>
+                <small id="minMainHint">Applies min-width: 0 in row layouts.</small>
+              </span>
+            </label>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Move selected item</span>
+              <code>DOM order</code>
+            </div>
+            <div class="button-row">
+              <button class="button ghost grow" id="moveBeforeBtn" type="button">← Earlier</button>
+              <button class="button ghost grow" id="moveAfterBtn" type="button">Later →</button>
+            </div>
+            <p class="control-help">This changes the actual HTML order, unlike the CSS order property.</p>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="challenges">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PRACTICE MODE</p>
+              <h2>Flex missions</h2>
+            </div>
+            <span class="item-chip" id="scoreChip">0/6</span>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="challengeSelect">
+              <span>Choose a mission</span>
+              <code id="challengeNumber">01</code>
+            </label>
+            <select id="challengeSelect"></select>
+          </div>
+
+          <article class="challenge-card">
+            <p class="challenge-kicker" id="challengeKicker">FOUNDATIONS</p>
+            <h3 id="challengeTitle">Perfect centre</h3>
+            <p id="challengePrompt"></p>
+            <div class="challenge-goal" id="challengeGoal"></div>
+          </article>
+
+          <div class="button-row stacked-mobile">
+            <button class="button ghost grow" id="loadChallengeBtn" type="button">Load setup</button>
+            <button class="button ghost grow" id="hintBtn" type="button">Reveal hint</button>
+            <button class="button primary grow" id="checkChallengeBtn" type="button">Check answer</button>
+          </div>
+
+          <div class="feedback" id="challengeFeedback" aria-live="polite">
+            Load the mission, then solve it using the normal controls.
+          </div>
+
+          <div class="hint-box hidden" id="hintBox"></div>
+        </section>
+
+        <section class="tab-panel" data-panel="guide">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">MENTAL MODEL</p>
+              <h2>Property map</h2>
+            </div>
+          </div>
+
+          <div class="guide-list">
+            <article>
+              <span class="guide-number">01</span>
+              <div><h3>Choose the main axis</h3><p><code>flex-direction</code> decides whether the main flow is a row or column, including reversed versions.</p></div>
+            </article>
+            <article>
+              <span class="guide-number">02</span>
+              <div><h3>Decide whether lines may wrap</h3><p><code>flex-wrap</code> creates additional flex lines when items no longer fit.</p></div>
+            </article>
+            <article>
+              <span class="guide-number">03</span>
+              <div><h3>Distribute space</h3><p><code>justify-content</code> works on the main axis. <code>align-items</code> works inside each line on the cross axis.</p></div>
+            </article>
+            <article>
+              <span class="guide-number">04</span>
+              <div><h3>Arrange multiple lines</h3><p><code>align-content</code> moves or spreads the flex lines themselves, so it needs multiple lines and spare cross-axis space.</p></div>
+            </article>
+            <article>
+              <span class="guide-number">05</span>
+              <div><h3>Resolve item sizes</h3><p><code>flex-basis</code> proposes a starting main size. Positive space uses grow factors; negative space uses scaled shrink factors.</p></div>
+            </article>
+            <article>
+              <span class="guide-number">06</span>
+              <div><h3>Override individuals</h3><p><code>order</code>, <code>align-self</code>, auto margins, and the <code>flex</code> shorthand control one item at a time.</p></div>
+            </article>
+          </div>
+
+          <div class="warning-box permanent">
+            <strong>Accessibility warning:</strong> CSS <code>order</code> changes visual order, not keyboard or screen-reader order. Use it carefully.
+          </div>
+        </section>
+      </aside>
+
+      <section class="workspace">
+        <div class="preset-bar" aria-label="Layout presets">
+          <div class="preset-copy">
+            <p class="eyebrow">ONE-CLICK EXPERIMENTS</p>
+            <strong>Presets</strong>
+          </div>
+          <div class="preset-scroll" id="presetButtons"></div>
+        </div>
+
+        <section class="lab-card">
+          <div class="lab-toolbar">
+            <div>
+              <div class="status-line">
+                <span class="live-pill"><span></span> LIVE</span>
+                <span id="lineCountText">1 flex line</span>
+                <span class="separator">•</span>
+                <span id="itemCountText">6 items</span>
+              </div>
+              <p class="lab-description" id="labDescription">Items begin at their basis, then Flexbox resolves the remaining main-axis space.</p>
+            </div>
+            <div class="button-row">
+              <button class="icon-button" id="removeItemBtn" type="button" title="Remove selected item" aria-label="Remove selected item">−</button>
+              <button class="icon-button" id="addItemBtn" type="button" title="Add item" aria-label="Add item">＋</button>
+              <button class="button ghost" id="resetBtn" type="button">Reset</button>
+            </div>
+          </div>
+
+          <div class="stage-shell" id="stageShell">
+            <div class="stage-ruler horizontal" aria-hidden="true"></div>
+            <div class="stage-ruler vertical" aria-hidden="true"></div>
+
+            <div class="flex-stage animate" id="flexStage" aria-label="Interactive flex container">
+              <div class="line-overlays" id="lineOverlays" aria-hidden="true"></div>
+              <div class="axis-layer" id="axisLayer" aria-hidden="true">
+                <div class="axis main-axis" id="mainAxis"><span>MAIN →</span></div>
+                <div class="axis cross-axis" id="crossAxis"><span>CROSS ↓</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-footer">
+            <div class="metric-card">
+              <span>Main size</span>
+              <strong id="mainSizeMetric">—</strong>
+              <small id="mainSizeAxis">width</small>
+            </div>
+            <div class="metric-card">
+              <span>Basis total</span>
+              <strong id="basisTotalMetric">—</strong>
+              <small>known pixel bases</small>
+            </div>
+            <div class="metric-card">
+              <span>Pre-flex space</span>
+              <strong id="freeSpaceMetric">—</strong>
+              <small id="freeSpaceMeaning">before grow/shrink</small>
+            </div>
+            <div class="metric-card">
+              <span>Flex factor</span>
+              <strong id="factorMetric">—</strong>
+              <small id="factorMeaning">grow sum</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="inspector-grid">
+          <article class="inspector-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">WHAT THE BROWSER DID</p>
+                <h2>Item measurements</h2>
+              </div>
+              <span class="muted" id="measurementAxis">Main axis: width</span>
+            </div>
+            <div class="measurement-list" id="measurementList"></div>
+          </article>
+
+          <article class="inspector-panel explanation-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">WHY IT MOVED</p>
+                <h2 id="explanationTitle">Flexbox resolution</h2>
+              </div>
+              <span class="concept-icon" id="conceptIcon" aria-hidden="true">↔</span>
+            </div>
+            <p id="explanationText"></p>
+            <div class="formula-box" id="formulaBox"></div>
+            <div class="tip-box" id="tipBox"></div>
+          </article>
+        </section>
+
+        <section class="code-panel">
+          <div class="section-heading code-heading">
+            <div>
+              <p class="eyebrow">GENERATED FROM YOUR CONTROLS</p>
+              <h2>Live CSS</h2>
+            </div>
+            <div class="button-row">
+              <button class="code-tab active" type="button" data-code-view="css">CSS</button>
+              <button class="code-tab" type="button" data-code-view="html">HTML</button>
+              <button class="button ghost" id="copyCodeBtn" type="button">Copy code</button>
+            </div>
+          </div>
+          <pre><code id="codeOutput"></code></pre>
+          <p class="copy-status" id="copyStatus" aria-live="polite"></p>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
