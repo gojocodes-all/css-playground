@@ -33,14 +33,14 @@
 
     <main class="layout">
       <aside class="controls-panel" aria-label="Flexbox controls">
-        <nav class="tabs" aria-label="Control sections">
-          <button class="tab active" type="button" data-tab="container">Container</button>
-          <button class="tab" type="button" data-tab="item">Selected item</button>
-          <button class="tab" type="button" data-tab="challenges">Challenges</button>
-          <button class="tab" type="button" data-tab="guide">Guide</button>
+        <nav class="tabs" aria-label="Control sections" role="tablist" aria-orientation="horizontal">
+          <button class="tab active" id="containerTab" type="button" role="tab" aria-controls="containerPanel" aria-selected="true" data-tab="container">Container</button>
+          <button class="tab" id="itemTab" type="button" role="tab" aria-controls="itemPanel" aria-selected="false" tabindex="-1" data-tab="item">Selected item</button>
+          <button class="tab" id="challengesTab" type="button" role="tab" aria-controls="challengesPanel" aria-selected="false" tabindex="-1" data-tab="challenges">Challenges</button>
+          <button class="tab" id="guideTab" type="button" role="tab" aria-controls="guidePanel" aria-selected="false" tabindex="-1" data-tab="guide">Guide</button>
         </nav>
 
-        <section class="tab-panel active" data-panel="container">
+        <section class="tab-panel active" id="containerPanel" role="tabpanel" aria-labelledby="containerTab" data-panel="container">
           <div class="panel-heading">
             <div>
               <p class="eyebrow">PARENT RULES</p>
@@ -188,7 +188,7 @@
           </div>
         </section>
 
-        <section class="tab-panel" data-panel="item">
+        <section class="tab-panel" id="itemPanel" role="tabpanel" aria-labelledby="itemTab" data-panel="item" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow">CHILD RULES</p>
@@ -301,7 +301,7 @@
           </div>
         </section>
 
-        <section class="tab-panel" data-panel="challenges">
+        <section class="tab-panel" id="challengesPanel" role="tabpanel" aria-labelledby="challengesTab" data-panel="challenges" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow">PRACTICE MODE</p>
@@ -338,7 +338,7 @@
           <div class="hint-box hidden" id="hintBox"></div>
         </section>
 
-        <section class="tab-panel" data-panel="guide">
+        <section class="tab-panel" id="guidePanel" role="tabpanel" aria-labelledby="guideTab" data-panel="guide" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow">MENTAL MODEL</p>
