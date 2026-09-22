@@ -1258,14 +1258,14 @@ pre {
 
     <main class="layout">
       <aside class="controls-panel" aria-label="Flexbox controls">
-        <nav class="tabs" aria-label="Control sections">
-          <button class="tab active" type="button" data-tab="container">Container</button>
-          <button class="tab" type="button" data-tab="item">Selected item</button>
-          <button class="tab" type="button" data-tab="challenges">Challenges</button>
-          <button class="tab" type="button" data-tab="guide">Guide</button>
+        <nav class="tabs" aria-label="Control sections" role="tablist" aria-orientation="horizontal">
+          <button class="tab active" id="containerTab" type="button" role="tab" aria-controls="containerPanel" aria-selected="true" data-tab="container">Container</button>
+          <button class="tab" id="itemTab" type="button" role="tab" aria-controls="itemPanel" aria-selected="false" tabindex="-1" data-tab="item">Selected item</button>
+          <button class="tab" id="challengesTab" type="button" role="tab" aria-controls="challengesPanel" aria-selected="false" tabindex="-1" data-tab="challenges">Challenges</button>
+          <button class="tab" id="guideTab" type="button" role="tab" aria-controls="guidePanel" aria-selected="false" tabindex="-1" data-tab="guide">Guide</button>
         </nav>
 
-        <section class="tab-panel active" data-panel="container">
+        <section class="tab-panel active" id="containerPanel" role="tabpanel" aria-labelledby="containerTab" data-panel="container">
           <div class="panel-heading">
             <div>
               <p class="eyebrow">PARENT RULES</p>
@@ -1413,7 +1413,7 @@ pre {
           </div>
         </section>
 
-        <section class="tab-panel" data-panel="item">
+        <section class="tab-panel" id="itemPanel" role="tabpanel" aria-labelledby="itemTab" data-panel="item" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow">CHILD RULES</p>
@@ -1526,7 +1526,7 @@ pre {
           </div>
         </section>
 
-        <section class="tab-panel" data-panel="challenges">
+        <section class="tab-panel" id="challengesPanel" role="tabpanel" aria-labelledby="challengesTab" data-panel="challenges" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow">PRACTICE MODE</p>
@@ -1563,7 +1563,7 @@ pre {
           <div class="hint-box hidden" id="hintBox"></div>
         </section>
 
-        <section class="tab-panel" data-panel="guide">
+        <section class="tab-panel" id="guidePanel" role="tabpanel" aria-labelledby="guideTab" data-panel="guide" hidden>
           <div class="panel-heading">
             <div>
               <p class="eyebrow">MENTAL MODEL</p>
@@ -2613,10 +2613,33 @@ function bindControl(id, eventName, updater, concept) {
 }
 
 function bindEvents() {
-  $$(".tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      $$(".tab").forEach(button => button.classList.toggle("active", button === tab));
-      $$(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.dataset.panel === tab.dataset.tab));
+  const tabs = $$(".tab");
+  const activateTab = (tab, moveFocus = false) => {
+    tabs.forEach(button => {
+      const isActive = button === tab;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+      button.tabIndex = isActive ? 0 : -1;
+    });
+    $$(".tab-panel").forEach(panel => {
+      const isActive = panel.dataset.panel === tab.dataset.tab;
+      panel.classList.toggle("active", isActive);
+      panel.hidden = !isActive;
+    });
+    if (moveFocus) tab.focus();
+  };
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => activateTab(tab));
+    tab.addEventListener("keydown", event => {
+      const keyOffsets = { ArrowLeft: -1, ArrowRight: 1 };
+      let nextIndex;
+      if (event.key in keyOffsets) nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+      if (nextIndex === undefined) return;
+      event.preventDefault();
+      activateTab(tabs[nextIndex], true);
     });
   });
 
