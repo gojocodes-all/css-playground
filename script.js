@@ -897,10 +897,33 @@ function bindControl(id, eventName, updater, concept) {
 }
 
 function bindEvents() {
-  $$(".tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      $$(".tab").forEach(button => button.classList.toggle("active", button === tab));
-      $$(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.dataset.panel === tab.dataset.tab));
+  const tabs = $$(".tab");
+  const activateTab = (tab, moveFocus = false) => {
+    tabs.forEach(button => {
+      const isActive = button === tab;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+      button.tabIndex = isActive ? 0 : -1;
+    });
+    $$(".tab-panel").forEach(panel => {
+      const isActive = panel.dataset.panel === tab.dataset.tab;
+      panel.classList.toggle("active", isActive);
+      panel.hidden = !isActive;
+    });
+    if (moveFocus) tab.focus();
+  };
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => activateTab(tab));
+    tab.addEventListener("keydown", event => {
+      const keyOffsets = { ArrowLeft: -1, ArrowRight: 1 };
+      let nextIndex;
+      if (event.key in keyOffsets) nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+      if (nextIndex === undefined) return;
+      event.preventDefault();
+      activateTab(tabs[nextIndex], true);
     });
   });
 

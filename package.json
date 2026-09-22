@@ -1,0 +1,10 @@
+{
+  "name": "flexlab",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
