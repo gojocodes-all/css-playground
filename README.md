@@ -20,13 +20,37 @@ A zero-dependency, responsive Flexbox learning laboratory built with plain HTML,
 - Fastest: open `flexlab-standalone.html`. It contains the HTML, CSS, and JavaScript in one file.
 - Developer version: open `index.html` directly in a modern browser, or use a local server such as VS Code Live Server.
 
+No package installation or build step is required to use either version.
+
+## Validate changes
+
+The regression tests use Node.js's built-in test runner and require Node.js 20 or newer. From the repository root, run:
+
+```bash
+npm test
+```
+
+The tests verify the tab relationships, selected state, panel visibility, and keyboard navigation in both the modular and standalone implementations.
+
 ## Files
 
 - `flexlab-standalone.html` — complete one-file version
 - `index.html` — semantic interface markup
 - `styles.css` — complete responsive visual design
 - `script.js` — state, measurements, presets, challenges, and code generation
+- `test/accessibility.test.js` — dependency-free tab accessibility regression tests for both implementations
 - `preview.png` — desktop preview
+
+## Contributing
+
+Keep the modular and standalone versions behaviorally equivalent:
+
+1. Make interface changes in `index.html`, `styles.css`, and `script.js`.
+2. Apply the equivalent markup, styles, and script changes to `flexlab-standalone.html`.
+3. Update or add tests when changing an interaction or accessibility contract.
+4. Run `npm test`, check `script.js` with `node --check script.js`, and open both versions in a modern browser before submitting a pull request.
+
+Changes should stay dependency-free and preserve the existing learning-tool scope. When changing a Flexbox explanation, confirm it against the standards references below.
 
 ## Core references used during design
 
