@@ -27,10 +27,10 @@ No package installation or build step is required to use either version.
 The regression tests use Node.js's built-in test runner and require Node.js 20 or newer. From the repository root, run:
 
 ```bash
-npm test
+npm run validate
 ```
 
-The tests verify the tab relationships, selected state, panel visibility, and keyboard navigation in both the modular and standalone implementations.
+The validation command checks JavaScript syntax in the modular build, the standalone inline script, and the test suite before running the regression tests. The tests verify tab relationships, selected state, panel visibility, and keyboard navigation in both implementations. Pull requests and updates to `main` run the same command in GitHub Actions.
 
 ## Files
 
@@ -48,7 +48,7 @@ Keep the modular and standalone versions behaviorally equivalent:
 1. Make interface changes in `index.html`, `styles.css`, and `script.js`.
 2. Apply the equivalent markup, styles, and script changes to `flexlab-standalone.html`.
 3. Update or add tests when changing an interaction or accessibility contract.
-4. Run `npm test`, check `script.js` with `node --check script.js`, and open both versions in a modern browser before submitting a pull request.
+4. Run `npm run validate` and open both versions in a modern browser before submitting a pull request.
 
 Changes should stay dependency-free and preserve the existing learning-tool scope. When changing a Flexbox explanation, confirm it against the standards references below.
 
