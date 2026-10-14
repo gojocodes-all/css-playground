@@ -4,7 +4,7 @@
 
 - **Rationale:** When the modern Clipboard API was unavailable, FlexLab ignored the legacy copy command's boolean result and always announced success. Browsers can reject that fallback without throwing, particularly when the documented standalone file is opened directly, leaving users with uncopied code and misleading feedback.
 - **Files changed:** `script.js`, `flexlab-standalone.html`, `test/accessibility.test.js`, and `.github/maintenance-log.md`.
-- **Validation:** Compiled both JavaScript implementations; ran the six Node.js regression tests; verified the modular and standalone copy implementations are identical; reviewed the complete diff.
+- **Validation:** Compiled both JavaScript implementations; evaluated all six dependency-free regression assertions; verified the modular and standalone copy implementations are identical; reviewed the complete diff. The hosted `npm run validate` result is recorded on the pull request.
 - **Risk:** Low. Successful modern and fallback copies retain the existing behavior. Only failed copies change: the generated code is selected and the live status asks the user to use the browser's copy command.
 - **Rollback:** Revert this pull request to restore the previous unconditional fallback success message.
 
