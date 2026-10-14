@@ -27,4 +27,12 @@ for (const [name, html, script] of implementations) {
     assert.match(script, /panel\.hidden = !isActive/);
     assert.match(script, /activateTab\(tabs\[nextIndex\], true\)/);
   });
+
+  test(`${name} copy feedback reflects the actual result`, () => {
+    assert.match(script, /return document\.execCommand\("copy"\)/);
+    assert.match(script, /copied = copyWithFallback\(text\)/);
+    assert.match(script, /if \(copied\)/);
+    assert.match(script, /selectCodeOutput\(\)/);
+    assert.match(script, /Copy failed\. Code selected; use your browser's copy command\./);
+  });
 }
