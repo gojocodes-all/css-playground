@@ -1,5 +1,14 @@
 # Maintenance log
 
+## 2026-10-20 — Generate the standalone build deterministically
+
+- **Rationale:** FlexLab ships modular and one-file versions, but contributors had to copy every HTML, CSS, and JavaScript change into the 89 KB standalone document by hand. CI checked syntax and a few shared behaviors without proving that both builds contained the same sources, so a valid edit could silently leave one version stale.
+- **Files changed:** Added `scripts/build-standalone.js` and `test/standalone-build.test.js`; updated `scripts/check-syntax.js`, `package.json`, `README.md`, and this maintenance log.
+- **Changes:** Make the modular files the source of truth; add a dependency-free generator and freshness check; preserve replacement-like JavaScript tokens literally; reject missing or duplicate source markers; validate every JavaScript file automatically; and document the generated-file workflow.
+- **Validation:** Confirmed the generated output exactly matches the existing `flexlab-standalone.html`; `npm run validate` runs the freshness gate, syntax checks, and ten regression tests in GitHub Actions; complete diff reviewed for runtime equivalence, security, accessibility, backward compatibility, and repository conventions.
+- **Risk:** Low. Application HTML, CSS, JavaScript behavior, dependencies, permissions, and deployment configuration are unchanged. The committed standalone file is byte-for-byte identical to the generator output.
+- **Rollback:** Revert this pull request to restore the manual synchronization workflow.
+
 ## 2026-10-14 — Report clipboard failures accurately
 
 - **Rationale:** When the modern Clipboard API was unavailable, FlexLab ignored the legacy copy command's boolean result and always announced success. Browsers can reject that fallback without throwing, particularly when the documented standalone file is opened directly, leaving users with uncopied code and misleading feedback.
