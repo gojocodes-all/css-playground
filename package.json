@@ -2,7 +2,8 @@
   "name": "flexlab",
   "private": true,
   "scripts": {
-    "check": "node scripts/check-syntax.js",
+    "build:standalone": "node scripts/build-standalone.js",
+    "check": "node scripts/build-standalone.js --check && node scripts/check-syntax.js",
     "test": "node --test",
     "validate": "npm run check && npm test"
   },
