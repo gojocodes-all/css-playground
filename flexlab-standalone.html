@@ -1095,6 +1095,34 @@ pre {
   text-align: right;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .button,
+  .icon-button,
+  .code-tab,
+  .tab,
+  .preset-button,
+  .item-picker button,
+  .flex-stage.animate .flex-item,
+  .measurement-fill {
+    transition: none;
+  }
+
+  .button:hover,
+  .icon-button:hover,
+  .preset-button:hover,
+  .item-picker button:hover {
+    transform: none;
+  }
+
+  .live-pill span {
+    animation: none;
+  }
+}
+
 @media (max-width: 1080px) {
   .layout {
     grid-template-columns: 300px minmax(0, 1fr);
@@ -1407,9 +1435,10 @@ pre {
               <span>Outline each flex line</span>
             </label>
             <label class="check-row">
-              <input id="animateCheck" type="checkbox" checked />
+              <input id="animateCheck" type="checkbox" checked aria-describedby="animateMotionHelp" />
               <span>Animate layout changes</span>
             </label>
+            <p class="control-help" id="animateMotionHelp" hidden>Animation is disabled while your device requests reduced motion.</p>
           </div>
         </section>
 
@@ -1718,6 +1747,7 @@ pre {
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
+const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const defaultItemNames = [
   ["Alpha", "short content"],
@@ -1768,7 +1798,7 @@ const state = {
   showAxes: true,
   showLabels: true,
   showLines: true,
-  animate: true,
+  animate: !reducedMotionQuery.matches,
   codeView: "css",
   lastConcept: "overview",
   completedChallenges: new Set()
@@ -2146,7 +2176,7 @@ function resetState() {
   state.showAxes = true;
   state.showLabels = true;
   state.showLines = true;
-  state.animate = true;
+  state.animate = !reducedMotionQuery.matches;
   setConcept("overview", false);
 }
 
@@ -2314,6 +2344,8 @@ function renderControls() {
 
   $("#showLinesCheck").checked = state.showLines;
   $("#animateCheck").checked = state.animate;
+  $("#animateCheck").disabled = reducedMotionQuery.matches;
+  $("#animateMotionHelp").hidden = !reducedMotionQuery.matches;
   $("#toggleAxesBtn").setAttribute("aria-pressed", String(state.showAxes));
   $("#toggleLabelsBtn").setAttribute("aria-pressed", String(state.showLabels));
 
@@ -2768,6 +2800,16 @@ function bindEvents() {
   if ("ResizeObserver" in window) {
     const observer = new ResizeObserver(() => renderMetrics());
     observer.observe(elements.flexStage);
+  }
+
+  const handleReducedMotionChange = event => {
+    state.animate = !event.matches;
+    render();
+  };
+  if (typeof reducedMotionQuery.addEventListener === "function") {
+    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
+  } else {
+    reducedMotionQuery.addListener(handleReducedMotionChange);
   }
 }
 

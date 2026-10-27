@@ -1087,6 +1087,34 @@ pre {
   text-align: right;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .button,
+  .icon-button,
+  .code-tab,
+  .tab,
+  .preset-button,
+  .item-picker button,
+  .flex-stage.animate .flex-item,
+  .measurement-fill {
+    transition: none;
+  }
+
+  .button:hover,
+  .icon-button:hover,
+  .preset-button:hover,
+  .item-picker button:hover {
+    transform: none;
+  }
+
+  .live-pill span {
+    animation: none;
+  }
+}
+
 @media (max-width: 1080px) {
   .layout {
     grid-template-columns: 300px minmax(0, 1fr);

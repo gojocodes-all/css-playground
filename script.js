@@ -2,6 +2,7 @@
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
+const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const defaultItemNames = [
   ["Alpha", "short content"],
@@ -52,7 +53,7 @@ const state = {
   showAxes: true,
   showLabels: true,
   showLines: true,
-  animate: true,
+  animate: !reducedMotionQuery.matches,
   codeView: "css",
   lastConcept: "overview",
   completedChallenges: new Set()
@@ -430,7 +431,7 @@ function resetState() {
   state.showAxes = true;
   state.showLabels = true;
   state.showLines = true;
-  state.animate = true;
+  state.animate = !reducedMotionQuery.matches;
   setConcept("overview", false);
 }
 
@@ -598,6 +599,8 @@ function renderControls() {
 
   $("#showLinesCheck").checked = state.showLines;
   $("#animateCheck").checked = state.animate;
+  $("#animateCheck").disabled = reducedMotionQuery.matches;
+  $("#animateMotionHelp").hidden = !reducedMotionQuery.matches;
   $("#toggleAxesBtn").setAttribute("aria-pressed", String(state.showAxes));
   $("#toggleLabelsBtn").setAttribute("aria-pressed", String(state.showLabels));
 
@@ -1052,6 +1055,16 @@ function bindEvents() {
   if ("ResizeObserver" in window) {
     const observer = new ResizeObserver(() => renderMetrics());
     observer.observe(elements.flexStage);
+  }
+
+  const handleReducedMotionChange = event => {
+    state.animate = !event.matches;
+    render();
+  };
+  if (typeof reducedMotionQuery.addEventListener === "function") {
+    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
+  } else {
+    reducedMotionQuery.addListener(handleReducedMotionChange);
   }
 }
 
