@@ -35,4 +35,22 @@ for (const [name, html, script] of implementations) {
     assert.match(script, /selectCodeOutput\(\)/);
     assert.match(script, /Copy failed\. Code selected; use your browser's copy command\./);
   });
+
+  test(`${name} honors the reduced-motion preference in application state`, () => {
+    assert.match(html, /id="animateCheck"[^>]+aria-describedby="animateMotionHelp"/);
+    assert.match(html, /id="animateMotionHelp"[^>]+hidden/);
+    assert.match(script, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
+    assert.match(script, /animate: !reducedMotionQuery\.matches/);
+    assert.match(script, /state\.animate = !reducedMotionQuery\.matches/);
+    assert.match(script, /animateCheck"\)\.disabled = reducedMotionQuery\.matches/);
+    assert.match(script, /reducedMotionQuery\.addEventListener\("change", handleReducedMotionChange\)/);
+  });
 }
+
+test("reduced-motion styles remove nonessential interface motion", () => {
+  const styles = readFileSync("styles.css", "utf8");
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styles, /scroll-behavior: auto/);
+  assert.match(styles, /\.flex-stage\.animate \.flex-item[\s\S]+transition: none/);
+  assert.match(styles, /\.live-pill span[\s\S]+animation: none/);
+});

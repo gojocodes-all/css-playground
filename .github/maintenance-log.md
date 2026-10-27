@@ -1,5 +1,14 @@
 # Maintenance log
 
+## 2026-10-27 — Respect reduced-motion preferences
+
+- **Rationale:** FlexLab always enabled smooth scrolling, a pulsing live indicator, hover movement, and animated layout transitions, including after Reset. Users who request reduced motion at the operating-system or browser level therefore received motion the interface could safely avoid.
+- **Files changed:** `index.html`, `styles.css`, `script.js`, `flexlab-standalone.html`, `test/accessibility.test.js`, and this maintenance log.
+- **Changes:** Start and reset the layout-animation control from the active reduced-motion preference; disable that control with an explanatory description while reduction is requested; react to preference changes without a reload; and suppress smooth scrolling, pulses, hover movement, and interface transitions in CSS.
+- **Validation:** `npm run validate`; regenerated and freshness-checked the standalone build; reviewed the complete diff for accessibility, responsive behavior, runtime compatibility, security, and repository conventions.
+- **Risk:** Low. Flexbox calculations, controls, generated code, presets, challenges, dependencies, and ordinary motion behavior are unchanged. Only users who explicitly request reduced motion receive the quieter presentation.
+- **Rollback:** Revert this pull request's squash commit to restore unconditional motion and the previous animation-control behavior.
+
 ## 2026-10-20 — Generate the standalone build deterministically
 
 - **Rationale:** FlexLab ships modular and one-file versions, but contributors had to copy every HTML, CSS, and JavaScript change into the 89 KB standalone document by hand. CI checked syntax and a few shared behaviors without proving that both builds contained the same sources, so a valid edit could silently leave one version stale.
