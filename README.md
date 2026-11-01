@@ -57,7 +57,7 @@ Changes should stay dependency-free and preserve the existing learning-tool scop
 
 ## Core references used during design
 
-- MDN: CSS flexible box layout
-- MDN: Basic concepts of Flexbox
-- MDN: Aligning items in a flex container
-- W3C: CSS Flexible Box Layout Module Level 1
+- [MDN: CSS flexible box layout](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout)
+- [MDN: Basic concepts of Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout/Basic_concepts)
+- [MDN: Aligning items in a flex container](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout/Aligning_items)
+- [W3C: CSS Flexible Box Layout Module Level 1](https://www.w3.org/TR/css-flexbox-1/)

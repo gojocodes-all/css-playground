@@ -1,5 +1,23 @@
 # Maintenance log
 
+## 2026-11-01 — Link the Flexbox design references
+
+- **Rationale:** The README named the MDN guides and W3C specification used
+  during design, but did not link to them. Readers had to search for the exact
+  documents before checking an explanation or contributing a content change.
+- **Files changed:** `README.md` now links each named reference to its current
+  canonical MDN or W3C page; this maintenance log records the documentation
+  update.
+- **Validation:** Verified each destination against the current MDN and W3C
+  pages; ran `npm run validate`; checked Markdown link syntax and
+  `git diff --check`; reviewed the complete diff for accuracy, scope, security,
+  accessibility, and backward compatibility.
+- **Risk:** Low. Documentation links are the only project behavior visible to
+  readers that changes; source files, generated output, tests, dependencies,
+  and deployment behavior are unchanged.
+- **Rollback:** Revert this pull request's squash commit to restore the
+  unlinked reference list. No application or deployment rollback is required.
+
 ## 2026-10-27 — Respect reduced-motion preferences
 
 - **Rationale:** FlexLab always enabled smooth scrolling, a pulsing live indicator, hover movement, and animated layout transitions, including after Reset. Users who request reduced motion at the operating-system or browser level therefore received motion the interface could safely avoid.
