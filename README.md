@@ -30,7 +30,7 @@ The regression tests use Node.js's built-in test runner and require Node.js 20 o
 npm run validate
 ```
 
-The validation command first verifies that the standalone file is the exact generated form of `index.html`, `styles.css`, and `script.js`. It then checks every JavaScript source and runs the regression tests. The tests cover standalone generation, tab relationships, selected state, panel visibility, keyboard navigation, and clipboard feedback. Pull requests and updates to `main` run the same command in GitHub Actions.
+The validation command first verifies that the standalone file is the exact generated form of `index.html`, `styles.css`, and `script.js`. It then checks every JavaScript source and runs the regression tests. The tests cover standalone generation, tab relationships, selected state, panel visibility, keyboard navigation, item-selection focus, and clipboard feedback. Pull requests and updates to `main` run the same command in GitHub Actions.
 
 ## Files
 

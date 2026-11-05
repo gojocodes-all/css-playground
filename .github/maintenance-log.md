@@ -1,5 +1,28 @@
 # Maintenance log
 
+## 2026-11-05 — Preserve focus and expose selected flex items
+
+- **Rationale:** Both item-selection surfaces rebuilt their controls after every
+  selection. Keyboard focus therefore fell back to the document after Enter,
+  Space, or a picker-button activation, interrupting continued keyboard use.
+  The selected item was also communicated only with color, and stage items had
+  no visible focus indicator.
+- **Files changed:** `script.js` preserves focus on the replacement control and
+  exposes selected state; `styles.css` gives stage items a visible focus ring;
+  `flexlab-standalone.html` regenerates the one-file build;
+  `test/accessibility.test.js` covers the selection contract; `README.md`
+  records the expanded validation coverage; this maintenance log records the
+  decision.
+- **Validation:** Regenerated the standalone build; ran `npm run validate`;
+  checked `git diff --check`; reviewed the complete diff for accessibility,
+  keyboard behavior, responsive layout, security, backward compatibility, and
+  repository conventions.
+- **Risk:** Low. Flexbox calculations, generated code, mouse selection, presets,
+  dependencies, and visual design are unchanged. Selection now retains focus
+  and reports its active state to assistive technology.
+- **Rollback:** Revert this pull request's squash commit to restore the previous
+  selection rendering and focus behavior.
+
 ## 2026-11-01 — Link the Flexbox design references
 
 - **Rationale:** The README named the MDN guides and W3C specification used
