@@ -379,10 +379,16 @@ function selectedItem() {
   return state.items.find(item => item.id === state.selectedId) || state.items[0];
 }
 
-function selectItem(id) {
+function selectItem(id, focusSurface = null) {
   if (!state.items.some(item => item.id === id)) return;
   state.selectedId = id;
   render();
+
+  if (!focusSurface) return;
+  const host = focusSurface === "stage" ? elements.flexStage : elements.itemPicker;
+  [...host.querySelectorAll("[data-id]")]
+    .find(node => node.dataset.id === id)
+    ?.focus();
 }
 
 function selectFirst() {
@@ -482,12 +488,14 @@ function renderItems() {
   elements.flexStage.querySelectorAll(".flex-item").forEach(node => node.remove());
 
   state.items.forEach((item, index) => {
+    const isSelected = item.id === state.selectedId;
     const itemEl = document.createElement("article");
-    itemEl.className = `flex-item${item.id === state.selectedId ? " selected" : ""}${index === 1 ? " baseline-tall" : ""}`;
+    itemEl.className = `flex-item${isSelected ? " selected" : ""}${index === 1 ? " baseline-tall" : ""}`;
     itemEl.dataset.id = item.id;
     itemEl.tabIndex = 0;
     itemEl.setAttribute("role", "button");
     itemEl.setAttribute("aria-label", `Select Item ${index + 1}`);
+    itemEl.setAttribute("aria-pressed", String(isSelected));
 
     itemEl.style.order = String(item.order);
     itemEl.style.flexGrow = String(item.grow);
@@ -515,11 +523,11 @@ function renderItems() {
       </div>
     `;
 
-    itemEl.addEventListener("click", () => selectItem(item.id));
+    itemEl.addEventListener("click", () => selectItem(item.id, "stage"));
     itemEl.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        selectItem(item.id);
+        selectItem(item.id, "stage");
       }
     });
     elements.flexStage.appendChild(itemEl);
@@ -635,9 +643,11 @@ function renderItemPicker() {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = String(index + 1);
+    button.dataset.id = item.id;
     button.classList.toggle("active", item.id === state.selectedId);
     button.setAttribute("aria-label", `Edit Item ${index + 1}`);
-    button.addEventListener("click", () => selectItem(item.id));
+    button.setAttribute("aria-pressed", String(item.id === state.selectedId));
+    button.addEventListener("click", () => selectItem(item.id, "picker"));
     elements.itemPicker.appendChild(button);
   });
 }

@@ -36,6 +36,16 @@ for (const [name, html, script] of implementations) {
     assert.match(script, /Copy failed\. Code selected; use your browser's copy command\./);
   });
 
+
+  test(`${name} item selection exposes state and preserves focus`, () => {
+    assert.match(script, /itemEl\.setAttribute\("aria-pressed", String\(isSelected\)\)/);
+    assert.match(script, /button\.setAttribute\("aria-pressed", String\(item\.id === state\.selectedId\)\)/);
+    assert.match(script, /selectItem\(item\.id, "stage"\)/);
+    assert.match(script, /selectItem\(item\.id, "picker"\)/);
+    assert.match(script, /host\.querySelectorAll\("\[data-id\]"\)/);
+    assert.match(script, /\.find\(node => node\.dataset\.id === id\)[\s\S]+?\.focus\(\)/);
+  });
+
   test(`${name} honors the reduced-motion preference in application state`, () => {
     assert.match(html, /id="animateCheck"[^>]+aria-describedby="animateMotionHelp"/);
     assert.match(html, /id="animateMotionHelp"[^>]+hidden/);
@@ -46,6 +56,11 @@ for (const [name, html, script] of implementations) {
     assert.match(script, /reducedMotionQuery\.addEventListener\("change", handleReducedMotionChange\)/);
   });
 }
+
+test("stage items expose a visible keyboard focus indicator", () => {
+  const styles = readFileSync("styles.css", "utf8");
+  assert.match(styles, /\.flex-item:focus-visible/);
+});
 
 test("reduced-motion styles remove nonessential interface motion", () => {
   const styles = readFileSync("styles.css", "utf8");
