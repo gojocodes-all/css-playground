@@ -859,7 +859,20 @@ function generateHtml() {
 
 function renderCode() {
   elements.codeOutput.textContent = state.codeView === "css" ? generateCss() : generateHtml();
-  $$(".code-tab").forEach(button => button.classList.toggle("active", button.dataset.codeView === state.codeView));
+  const codeTabs = $$(".code-tab");
+  const activeTab = codeTabs.find(button => button.dataset.codeView === state.codeView);
+
+  codeTabs.forEach(button => {
+    const isActive = button === activeTab;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+    button.tabIndex = isActive ? 0 : -1;
+  });
+
+  if (activeTab) {
+    $("#codePanel").setAttribute("aria-labelledby", activeTab.id);
+  }
+  $("#codeHeading").textContent = state.codeView === "css" ? "Live CSS" : "Live HTML";
 }
 
 function renderChallenges() {
@@ -909,6 +922,22 @@ function bindControl(id, eventName, updater, concept) {
   });
 }
 
+function bindRovingTabList(tabs, activate) {
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => activate(tab));
+    tab.addEventListener("keydown", event => {
+      const keyOffsets = { ArrowLeft: -1, ArrowRight: 1 };
+      let nextIndex;
+      if (event.key in keyOffsets) nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+      if (nextIndex === undefined) return;
+      event.preventDefault();
+      activate(tabs[nextIndex], true);
+    });
+  });
+}
+
 function bindEvents() {
   const tabs = $$(".tab");
   const activateTab = (tab, moveFocus = false) => {
@@ -925,20 +954,7 @@ function bindEvents() {
     });
     if (moveFocus) tab.focus();
   };
-
-  tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => activateTab(tab));
-    tab.addEventListener("keydown", event => {
-      const keyOffsets = { ArrowLeft: -1, ArrowRight: 1 };
-      let nextIndex;
-      if (event.key in keyOffsets) nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
-      if (event.key === "Home") nextIndex = 0;
-      if (event.key === "End") nextIndex = tabs.length - 1;
-      if (nextIndex === undefined) return;
-      event.preventDefault();
-      activateTab(tabs[nextIndex], true);
-    });
-  });
+  bindRovingTabList(tabs, activateTab);
 
   bindControl("displaySelect", "change", input => state.container.display = input.value, "overview");
   bindControl("directionSelect", "change", input => state.container.direction = input.value, "direction");
@@ -1011,11 +1027,11 @@ function bindEvents() {
   $("#moveBeforeBtn").addEventListener("click", () => moveSelected(-1));
   $("#moveAfterBtn").addEventListener("click", () => moveSelected(1));
 
-  $$(".code-tab").forEach(button => {
-    button.addEventListener("click", () => {
-      state.codeView = button.dataset.codeView;
-      renderCode();
-    });
+  const codeTabs = $$(".code-tab");
+  bindRovingTabList(codeTabs, (tab, moveFocus = false) => {
+    state.codeView = tab.dataset.codeView;
+    renderCode();
+    if (moveFocus) tab.focus();
   });
 
   $("#copyCodeBtn").addEventListener("click", copyCode);

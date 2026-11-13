@@ -85,6 +85,7 @@ pre {
 .brand-wrap,
 .top-actions,
 .button-row,
+.code-tab-list,
 .status-line,
 .section-heading,
 .panel-heading,
@@ -146,7 +147,8 @@ h3 {
 }
 
 .top-actions,
-.button-row {
+.button-row,
+.code-tab-list {
   gap: 8px;
 }
 

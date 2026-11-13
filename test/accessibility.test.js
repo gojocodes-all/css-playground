@@ -10,8 +10,8 @@ const implementations = [
 for (const [name, html, script] of implementations) {
   test(`${name} tabs expose accessible relationships`, () => {
     assert.match(html, /role="tablist"/);
-    assert.equal((html.match(/role="tab"/g) || []).length, 4);
-    assert.equal((html.match(/role="tabpanel"/g) || []).length, 4);
+    assert.equal((html.match(/class="tab(?: active)?"[^>]+role="tab"/g) || []).length, 4);
+    assert.equal((html.match(/class="tab-panel(?: active)?"[^>]+role="tabpanel"/g) || []).length, 4);
 
     for (const section of ["container", "item", "challenges", "guide"]) {
       assert.match(html, new RegExp(`id="${section}Tab"[^>]+aria-controls="${section}Panel"`));
@@ -25,7 +25,17 @@ for (const [name, html, script] of implementations) {
     }
     assert.match(script, /button\.setAttribute\("aria-selected", String\(isActive\)\)/);
     assert.match(script, /panel\.hidden = !isActive/);
-    assert.match(script, /activateTab\(tabs\[nextIndex\], true\)/);
+    assert.match(script, /activate\(tabs\[nextIndex\], true\)/);
+  });
+
+  test(`${name} code views expose an accessible keyboard tab contract`, () => {
+    assert.match(html, /class="code-tab-list"[^>]+role="tablist"[^>]+aria-label="Generated code format"/);
+    assert.match(html, /id="cssCodeTab"[^>]+role="tab"[^>]+aria-controls="codePanel"[^>]+aria-selected="true"/);
+    assert.match(html, /id="htmlCodeTab"[^>]+role="tab"[^>]+aria-controls="codePanel"[^>]+aria-selected="false"[^>]+tabindex="-1"/);
+    assert.match(html, /id="codePanel"[^>]+role="tabpanel"[^>]+aria-labelledby="cssCodeTab"[^>]+tabindex="0"/);
+    assert.match(script, /bindRovingTabList\(codeTabs,/);
+    assert.match(script, /codePanel"\)\.setAttribute\("aria-labelledby", activeTab\.id\)/);
+    assert.match(script, /codeHeading"\)\.textContent = state\.codeView === "css" \? "Live CSS" : "Live HTML"/);
   });
 
   test(`${name} copy feedback reflects the actual result`, () => {

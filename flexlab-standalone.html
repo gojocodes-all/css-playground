@@ -93,6 +93,7 @@ pre {
 .brand-wrap,
 .top-actions,
 .button-row,
+.code-tab-list,
 .status-line,
 .section-heading,
 .panel-heading,
@@ -154,7 +155,8 @@ h3 {
 }
 
 .top-actions,
-.button-row {
+.button-row,
+.code-tab-list {
   gap: 8px;
 }
 
@@ -1728,15 +1730,17 @@ pre {
           <div class="section-heading code-heading">
             <div>
               <p class="eyebrow">GENERATED FROM YOUR CONTROLS</p>
-              <h2>Live CSS</h2>
+              <h2 id="codeHeading">Live CSS</h2>
             </div>
             <div class="button-row">
-              <button class="code-tab active" type="button" data-code-view="css">CSS</button>
-              <button class="code-tab" type="button" data-code-view="html">HTML</button>
+              <div class="code-tab-list" role="tablist" aria-label="Generated code format">
+                <button class="code-tab active" id="cssCodeTab" type="button" role="tab" aria-controls="codePanel" aria-selected="true" data-code-view="css">CSS</button>
+                <button class="code-tab" id="htmlCodeTab" type="button" role="tab" aria-controls="codePanel" aria-selected="false" tabindex="-1" data-code-view="html">HTML</button>
+              </div>
               <button class="button ghost" id="copyCodeBtn" type="button">Copy code</button>
             </div>
           </div>
-          <pre><code id="codeOutput"></code></pre>
+          <pre id="codePanel" role="tabpanel" aria-labelledby="cssCodeTab" tabindex="0"><code id="codeOutput"></code></pre>
           <p class="copy-status" id="copyStatus" aria-live="polite"></p>
         </section>
       </section>
@@ -2605,7 +2609,20 @@ function generateHtml() {
 
 function renderCode() {
   elements.codeOutput.textContent = state.codeView === "css" ? generateCss() : generateHtml();
-  $$(".code-tab").forEach(button => button.classList.toggle("active", button.dataset.codeView === state.codeView));
+  const codeTabs = $$(".code-tab");
+  const activeTab = codeTabs.find(button => button.dataset.codeView === state.codeView);
+
+  codeTabs.forEach(button => {
+    const isActive = button === activeTab;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+    button.tabIndex = isActive ? 0 : -1;
+  });
+
+  if (activeTab) {
+    $("#codePanel").setAttribute("aria-labelledby", activeTab.id);
+  }
+  $("#codeHeading").textContent = state.codeView === "css" ? "Live CSS" : "Live HTML";
 }
 
 function renderChallenges() {
@@ -2655,6 +2672,22 @@ function bindControl(id, eventName, updater, concept) {
   });
 }
 
+function bindRovingTabList(tabs, activate) {
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => activate(tab));
+    tab.addEventListener("keydown", event => {
+      const keyOffsets = { ArrowLeft: -1, ArrowRight: 1 };
+      let nextIndex;
+      if (event.key in keyOffsets) nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+      if (nextIndex === undefined) return;
+      event.preventDefault();
+      activate(tabs[nextIndex], true);
+    });
+  });
+}
+
 function bindEvents() {
   const tabs = $$(".tab");
   const activateTab = (tab, moveFocus = false) => {
@@ -2671,20 +2704,7 @@ function bindEvents() {
     });
     if (moveFocus) tab.focus();
   };
-
-  tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => activateTab(tab));
-    tab.addEventListener("keydown", event => {
-      const keyOffsets = { ArrowLeft: -1, ArrowRight: 1 };
-      let nextIndex;
-      if (event.key in keyOffsets) nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
-      if (event.key === "Home") nextIndex = 0;
-      if (event.key === "End") nextIndex = tabs.length - 1;
-      if (nextIndex === undefined) return;
-      event.preventDefault();
-      activateTab(tabs[nextIndex], true);
-    });
-  });
+  bindRovingTabList(tabs, activateTab);
 
   bindControl("displaySelect", "change", input => state.container.display = input.value, "overview");
   bindControl("directionSelect", "change", input => state.container.direction = input.value, "direction");
@@ -2757,11 +2777,11 @@ function bindEvents() {
   $("#moveBeforeBtn").addEventListener("click", () => moveSelected(-1));
   $("#moveAfterBtn").addEventListener("click", () => moveSelected(1));
 
-  $$(".code-tab").forEach(button => {
-    button.addEventListener("click", () => {
-      state.codeView = button.dataset.codeView;
-      renderCode();
-    });
+  const codeTabs = $$(".code-tab");
+  bindRovingTabList(codeTabs, (tab, moveFocus = false) => {
+    state.codeView = tab.dataset.codeView;
+    renderCode();
+    if (moveFocus) tab.focus();
   });
 
   $("#copyCodeBtn").addEventListener("click", copyCode);
