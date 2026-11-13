@@ -474,15 +474,17 @@
           <div class="section-heading code-heading">
             <div>
               <p class="eyebrow">GENERATED FROM YOUR CONTROLS</p>
-              <h2>Live CSS</h2>
+              <h2 id="codeHeading">Live CSS</h2>
             </div>
             <div class="button-row">
-              <button class="code-tab active" type="button" data-code-view="css">CSS</button>
-              <button class="code-tab" type="button" data-code-view="html">HTML</button>
+              <div class="code-tab-list" role="tablist" aria-label="Generated code format">
+                <button class="code-tab active" id="cssCodeTab" type="button" role="tab" aria-controls="codePanel" aria-selected="true" data-code-view="css">CSS</button>
+                <button class="code-tab" id="htmlCodeTab" type="button" role="tab" aria-controls="codePanel" aria-selected="false" tabindex="-1" data-code-view="html">HTML</button>
+              </div>
               <button class="button ghost" id="copyCodeBtn" type="button">Copy code</button>
             </div>
           </div>
-          <pre><code id="codeOutput"></code></pre>
+          <pre id="codePanel" role="tabpanel" aria-labelledby="cssCodeTab" tabindex="0"><code id="codeOutput"></code></pre>
           <p class="copy-status" id="copyStatus" aria-live="polite"></p>
         </section>
       </section>

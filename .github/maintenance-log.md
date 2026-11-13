@@ -1,5 +1,28 @@
 # Maintenance log
 
+## 2026-11-13 — Unify accessible tab navigation
+
+- **Rationale:** The main control switcher exposed a complete tab relationship and
+  keyboard model, but the generated CSS/HTML switcher used separate ad hoc buttons.
+  Its selected format was communicated only visually, Arrow/Home/End navigation was
+  unavailable, and the section heading continued to say “Live CSS” in HTML mode.
+- **Files changed:** `script.js` now shares one roving-tab keyboard boundary across
+  both switchers and synchronizes the generated-code heading and panel label;
+  `index.html` and `styles.css` expose and style the code-view tab relationship;
+  `flexlab-standalone.html` contains the regenerated one-file build;
+  `test/accessibility.test.js` covers both implementations; `README.md` documents
+  the expanded validation contract; this maintenance log records the decision.
+- **Validation:** Regenerated the standalone build; ran `npm run validate` with all
+  18 tests passing; checked the modular and standalone tab relationships, JavaScript
+  syntax, generated-file freshness, workflow YAML, and `git diff --check`.
+- **Risk:** Low. Flexbox state, calculations, generated CSS/HTML, presets,
+  challenges, dependencies, storage, and deployment behavior are unchanged. The
+  existing mouse and Tab-key paths remain available; the code switcher gains state
+  semantics and standard tab-list keys.
+- **Rollback:** Revert this pull request's squash commit to restore the separate
+  code-switcher handlers and previous visual-only state. No data or deployment
+  migration is involved.
+
 ## 2026-11-05 — Preserve focus and expose selected flex items
 
 - **Rationale:** Both item-selection surfaces rebuilt their controls after every
