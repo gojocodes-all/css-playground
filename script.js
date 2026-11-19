@@ -2,7 +2,6 @@
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const defaultItemNames = [
   ["Alpha", "short content"],
@@ -53,7 +52,7 @@ const state = {
   showAxes: true,
   showLabels: true,
   showLines: true,
-  animate: !reducedMotionQuery.matches,
+  animate: true,
   codeView: "css",
   lastConcept: "overview",
   completedChallenges: new Set()
@@ -379,16 +378,10 @@ function selectedItem() {
   return state.items.find(item => item.id === state.selectedId) || state.items[0];
 }
 
-function selectItem(id, focusSurface = null) {
+function selectItem(id) {
   if (!state.items.some(item => item.id === id)) return;
   state.selectedId = id;
   render();
-
-  if (!focusSurface) return;
-  const host = focusSurface === "stage" ? elements.flexStage : elements.itemPicker;
-  [...host.querySelectorAll("[data-id]")]
-    .find(node => node.dataset.id === id)
-    ?.focus();
 }
 
 function selectFirst() {
@@ -437,7 +430,7 @@ function resetState() {
   state.showAxes = true;
   state.showLabels = true;
   state.showLines = true;
-  state.animate = !reducedMotionQuery.matches;
+  state.animate = true;
   setConcept("overview", false);
 }
 
@@ -488,14 +481,12 @@ function renderItems() {
   elements.flexStage.querySelectorAll(".flex-item").forEach(node => node.remove());
 
   state.items.forEach((item, index) => {
-    const isSelected = item.id === state.selectedId;
     const itemEl = document.createElement("article");
-    itemEl.className = `flex-item${isSelected ? " selected" : ""}${index === 1 ? " baseline-tall" : ""}`;
+    itemEl.className = `flex-item${item.id === state.selectedId ? " selected" : ""}${index === 1 ? " baseline-tall" : ""}`;
     itemEl.dataset.id = item.id;
     itemEl.tabIndex = 0;
     itemEl.setAttribute("role", "button");
     itemEl.setAttribute("aria-label", `Select Item ${index + 1}`);
-    itemEl.setAttribute("aria-pressed", String(isSelected));
 
     itemEl.style.order = String(item.order);
     itemEl.style.flexGrow = String(item.grow);
@@ -523,11 +514,11 @@ function renderItems() {
       </div>
     `;
 
-    itemEl.addEventListener("click", () => selectItem(item.id, "stage"));
+    itemEl.addEventListener("click", () => selectItem(item.id));
     itemEl.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        selectItem(item.id, "stage");
+        selectItem(item.id);
       }
     });
     elements.flexStage.appendChild(itemEl);
@@ -607,8 +598,6 @@ function renderControls() {
 
   $("#showLinesCheck").checked = state.showLines;
   $("#animateCheck").checked = state.animate;
-  $("#animateCheck").disabled = reducedMotionQuery.matches;
-  $("#animateMotionHelp").hidden = !reducedMotionQuery.matches;
   $("#toggleAxesBtn").setAttribute("aria-pressed", String(state.showAxes));
   $("#toggleLabelsBtn").setAttribute("aria-pressed", String(state.showLabels));
 
@@ -643,11 +632,9 @@ function renderItemPicker() {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = String(index + 1);
-    button.dataset.id = item.id;
     button.classList.toggle("active", item.id === state.selectedId);
     button.setAttribute("aria-label", `Edit Item ${index + 1}`);
-    button.setAttribute("aria-pressed", String(item.id === state.selectedId));
-    button.addEventListener("click", () => selectItem(item.id, "picker"));
+    button.addEventListener("click", () => selectItem(item.id));
     elements.itemPicker.appendChild(button);
   });
 }
@@ -859,20 +846,7 @@ function generateHtml() {
 
 function renderCode() {
   elements.codeOutput.textContent = state.codeView === "css" ? generateCss() : generateHtml();
-  const codeTabs = $$(".code-tab");
-  const activeTab = codeTabs.find(button => button.dataset.codeView === state.codeView);
-
-  codeTabs.forEach(button => {
-    const isActive = button === activeTab;
-    button.classList.toggle("active", isActive);
-    button.setAttribute("aria-selected", String(isActive));
-    button.tabIndex = isActive ? 0 : -1;
-  });
-
-  if (activeTab) {
-    $("#codePanel").setAttribute("aria-labelledby", activeTab.id);
-  }
-  $("#codeHeading").textContent = state.codeView === "css" ? "Live CSS" : "Live HTML";
+  $$(".code-tab").forEach(button => button.classList.toggle("active", button.dataset.codeView === state.codeView));
 }
 
 function renderChallenges() {
@@ -922,39 +896,13 @@ function bindControl(id, eventName, updater, concept) {
   });
 }
 
-function bindRovingTabList(tabs, activate) {
-  tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => activate(tab));
-    tab.addEventListener("keydown", event => {
-      const keyOffsets = { ArrowLeft: -1, ArrowRight: 1 };
-      let nextIndex;
-      if (event.key in keyOffsets) nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
-      if (event.key === "Home") nextIndex = 0;
-      if (event.key === "End") nextIndex = tabs.length - 1;
-      if (nextIndex === undefined) return;
-      event.preventDefault();
-      activate(tabs[nextIndex], true);
+function bindEvents() {
+  $$(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      $$(".tab").forEach(button => button.classList.toggle("active", button === tab));
+      $$(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.dataset.panel === tab.dataset.tab));
     });
   });
-}
-
-function bindEvents() {
-  const tabs = $$(".tab");
-  const activateTab = (tab, moveFocus = false) => {
-    tabs.forEach(button => {
-      const isActive = button === tab;
-      button.classList.toggle("active", isActive);
-      button.setAttribute("aria-selected", String(isActive));
-      button.tabIndex = isActive ? 0 : -1;
-    });
-    $$(".tab-panel").forEach(panel => {
-      const isActive = panel.dataset.panel === tab.dataset.tab;
-      panel.classList.toggle("active", isActive);
-      panel.hidden = !isActive;
-    });
-    if (moveFocus) tab.focus();
-  };
-  bindRovingTabList(tabs, activateTab);
 
   bindControl("displaySelect", "change", input => state.container.display = input.value, "overview");
   bindControl("directionSelect", "change", input => state.container.direction = input.value, "direction");
@@ -1027,11 +975,11 @@ function bindEvents() {
   $("#moveBeforeBtn").addEventListener("click", () => moveSelected(-1));
   $("#moveAfterBtn").addEventListener("click", () => moveSelected(1));
 
-  const codeTabs = $$(".code-tab");
-  bindRovingTabList(codeTabs, (tab, moveFocus = false) => {
-    state.codeView = tab.dataset.codeView;
-    renderCode();
-    if (moveFocus) tab.focus();
+  $$(".code-tab").forEach(button => {
+    button.addEventListener("click", () => {
+      state.codeView = button.dataset.codeView;
+      renderCode();
+    });
   });
 
   $("#copyCodeBtn").addEventListener("click", copyCode);
@@ -1082,16 +1030,6 @@ function bindEvents() {
     const observer = new ResizeObserver(() => renderMetrics());
     observer.observe(elements.flexStage);
   }
-
-  const handleReducedMotionChange = event => {
-    state.animate = !event.matches;
-    render();
-  };
-  if (typeof reducedMotionQuery.addEventListener === "function") {
-    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
-  } else {
-    reducedMotionQuery.addListener(handleReducedMotionChange);
-  }
 }
 
 function moveSelected(delta) {
@@ -1103,52 +1041,21 @@ function moveSelected(delta) {
   render();
 }
 
-function copyWithFallback(text) {
-  const textArea = document.createElement("textarea");
-  textArea.value = text;
-  textArea.setAttribute("readonly", "");
-  textArea.style.position = "fixed";
-  textArea.style.opacity = "0";
-  document.body.appendChild(textArea);
-  textArea.select();
-
-  try {
-    return document.execCommand("copy");
-  } catch {
-    return false;
-  } finally {
-    textArea.remove();
-  }
-}
-
-function selectCodeOutput() {
-  const selection = window.getSelection();
-  if (!selection) return;
-  const range = document.createRange();
-  range.selectNodeContents(elements.codeOutput);
-  selection.removeAllRanges();
-  selection.addRange(range);
-}
-
 async function copyCode() {
   const text = elements.codeOutput.textContent;
-  let copied = false;
-
   try {
-    if (!navigator.clipboard?.writeText) throw new Error("Clipboard API unavailable");
     await navigator.clipboard.writeText(text);
-    copied = true;
-  } catch {
-    copied = copyWithFallback(text);
-  }
-
-  if (copied) {
     elements.copyStatus.textContent = "Copied to clipboard.";
-  } else {
-    selectCodeOutput();
-    elements.copyStatus.textContent = "Copy failed. Code selected; use your browser's copy command.";
+  } catch {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    textArea.remove();
+    elements.copyStatus.textContent = "Copied using fallback mode.";
   }
-  window.setTimeout(() => elements.copyStatus.textContent = "", 3000);
+  window.setTimeout(() => elements.copyStatus.textContent = "", 1800);
 }
 
 bindEvents();

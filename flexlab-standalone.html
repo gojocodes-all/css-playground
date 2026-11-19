@@ -60,7 +60,6 @@ input[type="checkbox"] {
 }
 
 button:focus-visible,
-.flex-item:focus-visible,
 select:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--accent);
@@ -93,7 +92,6 @@ pre {
 .brand-wrap,
 .top-actions,
 .button-row,
-.code-tab-list,
 .status-line,
 .section-heading,
 .panel-heading,
@@ -155,8 +153,7 @@ h3 {
 }
 
 .top-actions,
-.button-row,
-.code-tab-list {
+.button-row {
   gap: 8px;
 }
 
@@ -1098,34 +1095,6 @@ pre {
   text-align: right;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  .button,
-  .icon-button,
-  .code-tab,
-  .tab,
-  .preset-button,
-  .item-picker button,
-  .flex-stage.animate .flex-item,
-  .measurement-fill {
-    transition: none;
-  }
-
-  .button:hover,
-  .icon-button:hover,
-  .preset-button:hover,
-  .item-picker button:hover {
-    transform: none;
-  }
-
-  .live-pill span {
-    animation: none;
-  }
-}
-
 @media (max-width: 1080px) {
   .layout {
     grid-template-columns: 300px minmax(0, 1fr);
@@ -1289,14 +1258,14 @@ pre {
 
     <main class="layout">
       <aside class="controls-panel" aria-label="Flexbox controls">
-        <nav class="tabs" aria-label="Control sections" role="tablist" aria-orientation="horizontal">
-          <button class="tab active" id="containerTab" type="button" role="tab" aria-controls="containerPanel" aria-selected="true" data-tab="container">Container</button>
-          <button class="tab" id="itemTab" type="button" role="tab" aria-controls="itemPanel" aria-selected="false" tabindex="-1" data-tab="item">Selected item</button>
-          <button class="tab" id="challengesTab" type="button" role="tab" aria-controls="challengesPanel" aria-selected="false" tabindex="-1" data-tab="challenges">Challenges</button>
-          <button class="tab" id="guideTab" type="button" role="tab" aria-controls="guidePanel" aria-selected="false" tabindex="-1" data-tab="guide">Guide</button>
+        <nav class="tabs" aria-label="Control sections">
+          <button class="tab active" type="button" data-tab="container">Container</button>
+          <button class="tab" type="button" data-tab="item">Selected item</button>
+          <button class="tab" type="button" data-tab="challenges">Challenges</button>
+          <button class="tab" type="button" data-tab="guide">Guide</button>
         </nav>
 
-        <section class="tab-panel active" id="containerPanel" role="tabpanel" aria-labelledby="containerTab" data-panel="container">
+        <section class="tab-panel active" data-panel="container">
           <div class="panel-heading">
             <div>
               <p class="eyebrow">PARENT RULES</p>
@@ -1438,14 +1407,13 @@ pre {
               <span>Outline each flex line</span>
             </label>
             <label class="check-row">
-              <input id="animateCheck" type="checkbox" checked aria-describedby="animateMotionHelp" />
+              <input id="animateCheck" type="checkbox" checked />
               <span>Animate layout changes</span>
             </label>
-            <p class="control-help" id="animateMotionHelp" hidden>Animation is disabled while your device requests reduced motion.</p>
           </div>
         </section>
 
-        <section class="tab-panel" id="itemPanel" role="tabpanel" aria-labelledby="itemTab" data-panel="item" hidden>
+        <section class="tab-panel" data-panel="item">
           <div class="panel-heading">
             <div>
               <p class="eyebrow">CHILD RULES</p>
@@ -1558,7 +1526,7 @@ pre {
           </div>
         </section>
 
-        <section class="tab-panel" id="challengesPanel" role="tabpanel" aria-labelledby="challengesTab" data-panel="challenges" hidden>
+        <section class="tab-panel" data-panel="challenges">
           <div class="panel-heading">
             <div>
               <p class="eyebrow">PRACTICE MODE</p>
@@ -1595,7 +1563,7 @@ pre {
           <div class="hint-box hidden" id="hintBox"></div>
         </section>
 
-        <section class="tab-panel" id="guidePanel" role="tabpanel" aria-labelledby="guideTab" data-panel="guide" hidden>
+        <section class="tab-panel" data-panel="guide">
           <div class="panel-heading">
             <div>
               <p class="eyebrow">MENTAL MODEL</p>
@@ -1730,17 +1698,15 @@ pre {
           <div class="section-heading code-heading">
             <div>
               <p class="eyebrow">GENERATED FROM YOUR CONTROLS</p>
-              <h2 id="codeHeading">Live CSS</h2>
+              <h2>Live CSS</h2>
             </div>
             <div class="button-row">
-              <div class="code-tab-list" role="tablist" aria-label="Generated code format">
-                <button class="code-tab active" id="cssCodeTab" type="button" role="tab" aria-controls="codePanel" aria-selected="true" data-code-view="css">CSS</button>
-                <button class="code-tab" id="htmlCodeTab" type="button" role="tab" aria-controls="codePanel" aria-selected="false" tabindex="-1" data-code-view="html">HTML</button>
-              </div>
+              <button class="code-tab active" type="button" data-code-view="css">CSS</button>
+              <button class="code-tab" type="button" data-code-view="html">HTML</button>
               <button class="button ghost" id="copyCodeBtn" type="button">Copy code</button>
             </div>
           </div>
-          <pre id="codePanel" role="tabpanel" aria-labelledby="cssCodeTab" tabindex="0"><code id="codeOutput"></code></pre>
+          <pre><code id="codeOutput"></code></pre>
           <p class="copy-status" id="copyStatus" aria-live="polite"></p>
         </section>
       </section>
@@ -1752,7 +1718,6 @@ pre {
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const defaultItemNames = [
   ["Alpha", "short content"],
@@ -1803,7 +1768,7 @@ const state = {
   showAxes: true,
   showLabels: true,
   showLines: true,
-  animate: !reducedMotionQuery.matches,
+  animate: true,
   codeView: "css",
   lastConcept: "overview",
   completedChallenges: new Set()
@@ -2129,16 +2094,10 @@ function selectedItem() {
   return state.items.find(item => item.id === state.selectedId) || state.items[0];
 }
 
-function selectItem(id, focusSurface = null) {
+function selectItem(id) {
   if (!state.items.some(item => item.id === id)) return;
   state.selectedId = id;
   render();
-
-  if (!focusSurface) return;
-  const host = focusSurface === "stage" ? elements.flexStage : elements.itemPicker;
-  [...host.querySelectorAll("[data-id]")]
-    .find(node => node.dataset.id === id)
-    ?.focus();
 }
 
 function selectFirst() {
@@ -2187,7 +2146,7 @@ function resetState() {
   state.showAxes = true;
   state.showLabels = true;
   state.showLines = true;
-  state.animate = !reducedMotionQuery.matches;
+  state.animate = true;
   setConcept("overview", false);
 }
 
@@ -2238,14 +2197,12 @@ function renderItems() {
   elements.flexStage.querySelectorAll(".flex-item").forEach(node => node.remove());
 
   state.items.forEach((item, index) => {
-    const isSelected = item.id === state.selectedId;
     const itemEl = document.createElement("article");
-    itemEl.className = `flex-item${isSelected ? " selected" : ""}${index === 1 ? " baseline-tall" : ""}`;
+    itemEl.className = `flex-item${item.id === state.selectedId ? " selected" : ""}${index === 1 ? " baseline-tall" : ""}`;
     itemEl.dataset.id = item.id;
     itemEl.tabIndex = 0;
     itemEl.setAttribute("role", "button");
     itemEl.setAttribute("aria-label", `Select Item ${index + 1}`);
-    itemEl.setAttribute("aria-pressed", String(isSelected));
 
     itemEl.style.order = String(item.order);
     itemEl.style.flexGrow = String(item.grow);
@@ -2273,11 +2230,11 @@ function renderItems() {
       </div>
     `;
 
-    itemEl.addEventListener("click", () => selectItem(item.id, "stage"));
+    itemEl.addEventListener("click", () => selectItem(item.id));
     itemEl.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        selectItem(item.id, "stage");
+        selectItem(item.id);
       }
     });
     elements.flexStage.appendChild(itemEl);
@@ -2357,8 +2314,6 @@ function renderControls() {
 
   $("#showLinesCheck").checked = state.showLines;
   $("#animateCheck").checked = state.animate;
-  $("#animateCheck").disabled = reducedMotionQuery.matches;
-  $("#animateMotionHelp").hidden = !reducedMotionQuery.matches;
   $("#toggleAxesBtn").setAttribute("aria-pressed", String(state.showAxes));
   $("#toggleLabelsBtn").setAttribute("aria-pressed", String(state.showLabels));
 
@@ -2393,11 +2348,9 @@ function renderItemPicker() {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = String(index + 1);
-    button.dataset.id = item.id;
     button.classList.toggle("active", item.id === state.selectedId);
     button.setAttribute("aria-label", `Edit Item ${index + 1}`);
-    button.setAttribute("aria-pressed", String(item.id === state.selectedId));
-    button.addEventListener("click", () => selectItem(item.id, "picker"));
+    button.addEventListener("click", () => selectItem(item.id));
     elements.itemPicker.appendChild(button);
   });
 }
@@ -2609,20 +2562,7 @@ function generateHtml() {
 
 function renderCode() {
   elements.codeOutput.textContent = state.codeView === "css" ? generateCss() : generateHtml();
-  const codeTabs = $$(".code-tab");
-  const activeTab = codeTabs.find(button => button.dataset.codeView === state.codeView);
-
-  codeTabs.forEach(button => {
-    const isActive = button === activeTab;
-    button.classList.toggle("active", isActive);
-    button.setAttribute("aria-selected", String(isActive));
-    button.tabIndex = isActive ? 0 : -1;
-  });
-
-  if (activeTab) {
-    $("#codePanel").setAttribute("aria-labelledby", activeTab.id);
-  }
-  $("#codeHeading").textContent = state.codeView === "css" ? "Live CSS" : "Live HTML";
+  $$(".code-tab").forEach(button => button.classList.toggle("active", button.dataset.codeView === state.codeView));
 }
 
 function renderChallenges() {
@@ -2672,39 +2612,13 @@ function bindControl(id, eventName, updater, concept) {
   });
 }
 
-function bindRovingTabList(tabs, activate) {
-  tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => activate(tab));
-    tab.addEventListener("keydown", event => {
-      const keyOffsets = { ArrowLeft: -1, ArrowRight: 1 };
-      let nextIndex;
-      if (event.key in keyOffsets) nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
-      if (event.key === "Home") nextIndex = 0;
-      if (event.key === "End") nextIndex = tabs.length - 1;
-      if (nextIndex === undefined) return;
-      event.preventDefault();
-      activate(tabs[nextIndex], true);
+function bindEvents() {
+  $$(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      $$(".tab").forEach(button => button.classList.toggle("active", button === tab));
+      $$(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.dataset.panel === tab.dataset.tab));
     });
   });
-}
-
-function bindEvents() {
-  const tabs = $$(".tab");
-  const activateTab = (tab, moveFocus = false) => {
-    tabs.forEach(button => {
-      const isActive = button === tab;
-      button.classList.toggle("active", isActive);
-      button.setAttribute("aria-selected", String(isActive));
-      button.tabIndex = isActive ? 0 : -1;
-    });
-    $$(".tab-panel").forEach(panel => {
-      const isActive = panel.dataset.panel === tab.dataset.tab;
-      panel.classList.toggle("active", isActive);
-      panel.hidden = !isActive;
-    });
-    if (moveFocus) tab.focus();
-  };
-  bindRovingTabList(tabs, activateTab);
 
   bindControl("displaySelect", "change", input => state.container.display = input.value, "overview");
   bindControl("directionSelect", "change", input => state.container.direction = input.value, "direction");
@@ -2777,11 +2691,11 @@ function bindEvents() {
   $("#moveBeforeBtn").addEventListener("click", () => moveSelected(-1));
   $("#moveAfterBtn").addEventListener("click", () => moveSelected(1));
 
-  const codeTabs = $$(".code-tab");
-  bindRovingTabList(codeTabs, (tab, moveFocus = false) => {
-    state.codeView = tab.dataset.codeView;
-    renderCode();
-    if (moveFocus) tab.focus();
+  $$(".code-tab").forEach(button => {
+    button.addEventListener("click", () => {
+      state.codeView = button.dataset.codeView;
+      renderCode();
+    });
   });
 
   $("#copyCodeBtn").addEventListener("click", copyCode);
@@ -2832,16 +2746,6 @@ function bindEvents() {
     const observer = new ResizeObserver(() => renderMetrics());
     observer.observe(elements.flexStage);
   }
-
-  const handleReducedMotionChange = event => {
-    state.animate = !event.matches;
-    render();
-  };
-  if (typeof reducedMotionQuery.addEventListener === "function") {
-    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
-  } else {
-    reducedMotionQuery.addListener(handleReducedMotionChange);
-  }
 }
 
 function moveSelected(delta) {
@@ -2853,52 +2757,21 @@ function moveSelected(delta) {
   render();
 }
 
-function copyWithFallback(text) {
-  const textArea = document.createElement("textarea");
-  textArea.value = text;
-  textArea.setAttribute("readonly", "");
-  textArea.style.position = "fixed";
-  textArea.style.opacity = "0";
-  document.body.appendChild(textArea);
-  textArea.select();
-
-  try {
-    return document.execCommand("copy");
-  } catch {
-    return false;
-  } finally {
-    textArea.remove();
-  }
-}
-
-function selectCodeOutput() {
-  const selection = window.getSelection();
-  if (!selection) return;
-  const range = document.createRange();
-  range.selectNodeContents(elements.codeOutput);
-  selection.removeAllRanges();
-  selection.addRange(range);
-}
-
 async function copyCode() {
   const text = elements.codeOutput.textContent;
-  let copied = false;
-
   try {
-    if (!navigator.clipboard?.writeText) throw new Error("Clipboard API unavailable");
     await navigator.clipboard.writeText(text);
-    copied = true;
-  } catch {
-    copied = copyWithFallback(text);
-  }
-
-  if (copied) {
     elements.copyStatus.textContent = "Copied to clipboard.";
-  } else {
-    selectCodeOutput();
-    elements.copyStatus.textContent = "Copy failed. Code selected; use your browser's copy command.";
+  } catch {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    textArea.remove();
+    elements.copyStatus.textContent = "Copied using fallback mode.";
   }
-  window.setTimeout(() => elements.copyStatus.textContent = "", 3000);
+  window.setTimeout(() => elements.copyStatus.textContent = "", 1800);
 }
 
 bindEvents();

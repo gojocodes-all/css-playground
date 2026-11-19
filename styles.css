@@ -52,7 +52,6 @@ input[type="checkbox"] {
 }
 
 button:focus-visible,
-.flex-item:focus-visible,
 select:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--accent);
@@ -85,7 +84,6 @@ pre {
 .brand-wrap,
 .top-actions,
 .button-row,
-.code-tab-list,
 .status-line,
 .section-heading,
 .panel-heading,
@@ -147,8 +145,7 @@ h3 {
 }
 
 .top-actions,
-.button-row,
-.code-tab-list {
+.button-row {
   gap: 8px;
 }
 
@@ -1088,34 +1085,6 @@ pre {
   min-height: 1.1rem;
   margin: 7px 0 0;
   text-align: right;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  .button,
-  .icon-button,
-  .code-tab,
-  .tab,
-  .preset-button,
-  .item-picker button,
-  .flex-stage.animate .flex-item,
-  .measurement-fill {
-    transition: none;
-  }
-
-  .button:hover,
-  .icon-button:hover,
-  .preset-button:hover,
-  .item-picker button:hover {
-    transform: none;
-  }
-
-  .live-pill span {
-    animation: none;
-  }
 }
 
 @media (max-width: 1080px) {
